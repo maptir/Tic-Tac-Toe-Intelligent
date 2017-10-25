@@ -31,7 +31,8 @@ public class TicTacToe {
 
 	/** Choose best move for computer */
 	public static void chooseMove(char[][] board, char computer) {
-		
+		if (board[1][1] == ' ')
+			board[1][1] = computer;
 	}
 
 	/** Returns true if you are first player. */
