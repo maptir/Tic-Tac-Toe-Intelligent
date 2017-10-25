@@ -1,4 +1,4 @@
-package Project2;
+package tictactoe;
 
 /** The three-in-a-row game for two human players. */
 public class TicTacToe {

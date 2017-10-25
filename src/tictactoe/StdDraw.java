@@ -1,4 +1,4 @@
-package Project2;
+package tictactoe;
 
 /*
  * To change this template, choose Tools | Templates
