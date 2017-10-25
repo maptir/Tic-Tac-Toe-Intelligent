@@ -13,15 +13,75 @@ public class TicTacToe {
 		}
 		StdDraw.setXscale(-0.5, 2.5);
 		StdDraw.setYscale(-0.5, 2.5);
-		char currentPlayer = 'X';
-		char npc = 'O';
-		draw(board, currentPlayer);
+		boolean youFirst = moveFirst();
+		char player1 = pickOX();
+		char computer = opposite(player1);
+		draw(board, player1);
 		while (!gameOver(board)) {
-			if (handleMouseClick(board, currentPlayer)) {
-				currentPlayer = opposite(currentPlayer);
-				draw(board, currentPlayer);
+			if (youFirst) {
+				handleMouseClick(board, player1);
+				draw(board, player1);
+			} else {
+				chooseMove(board, computer);
+				draw(board, computer);
 			}
+			youFirst = !youFirst;
 		}
+	}
+
+	/** Choose best move for computer */
+	public static void chooseMove(char[][] board, char computer) {
+		
+	}
+
+	/** Returns true if you are first player. */
+	public static boolean moveFirst() {
+		StdDraw.text(1, 1.5, "Who move first ?");
+		StdDraw.line(1, 0.75, 1, 1.25);
+		StdDraw.text(0.5, 1, "You");
+		StdDraw.text(1.5, 1, "Computer");
+		StdDraw.show(0);
+		while (!StdDraw.mousePressed()) {
+			// Wait for mouse press
+		}
+		double x = StdDraw.mouseX();
+		while (StdDraw.mousePressed()) {
+			// Wait for mouse release
+		}
+		StdDraw.clear();
+		return x < 1;
+	}
+
+	/** Returns 'O' if you pick O or 'X' if you pick X. */
+	public static char pickOX() {
+		StdDraw.text(1, 1.5, "Pick what you want O or X ?");
+		StdDraw.line(1, 0.75, 1, 1.25);
+		StdDraw.text(0.5, 1, "O");
+		StdDraw.text(1.5, 1, "X");
+		StdDraw.show(0);
+		while (!StdDraw.mousePressed()) {
+			// Wait for mouse press
+		}
+		double x = StdDraw.mouseX();
+		while (StdDraw.mousePressed()) {
+			// Wait for mouse release
+		}
+		StdDraw.clear();
+		return x < 1 ? 'O' : 'X';
+	}
+
+	public static char winner(char[][] board) {
+		for (int i = 0; i < board.length; i++) {
+			if (board[i][0] != ' ' && board[i][0] == board[i][1] && board[i][0] == board[i][2])
+				return board[i][0];
+			else if (board[0][i] != ' ' && board[0][i] == board[1][i] && board[0][i] == board[2][i])
+				return board[0][i];
+		}
+		if (board[0][0] != ' ' && board[0][0] == board[1][1] && board[0][0] == board[2][2])
+			return board[0][0];
+		else if (board[0][2] != ' ' && board[0][2] == board[1][1] && board[0][2] == board[2][0])
+			return board[0][2];
+		return 0;
 	}
 
 	/**
@@ -40,11 +100,11 @@ public class TicTacToe {
 		}
 		char winner = winner(board);
 		if (winner != 0)
-			StdDraw.text(1.0, -0.5, winner + " win!");
-		else if(isFull(board))
-			StdDraw.text(1.0, -0.5, "Draw!");
+			StdDraw.text(1.0, -0.6, winner + " win!");
+		else if (isFull(board))
+			StdDraw.text(1.0, -0.6, "Draw!");
 		else
-			StdDraw.text(1.0, -0.5, player + " to play. Click in a square.");
+			StdDraw.text(1.0, -0.6, player + " to play. Click in a square.");
 		StdDraw.show(0);
 	}
 
@@ -57,7 +117,7 @@ public class TicTacToe {
 	 * Handles a mouse click, placing player's mark in the square on which the user
 	 * clicks. Return true if click on blank space else false.
 	 */
-	public static boolean handleMouseClick(char[][] board, char player) {
+	public static void handleMouseClick(char[][] board, char player) {
 		while (!StdDraw.mousePressed()) {
 			// Wait for mouse press
 		}
@@ -67,31 +127,14 @@ public class TicTacToe {
 			// Wait for mouse release
 		}
 		if (x >= board.length || y >= board.length || x < 0 || y < 0)
-			return false;
+			return;
 		if (board[x][y] == ' ') {
 			board[x][y] = player;
-			return true;
 		}
-		return false;
-	}
-
-	public static char winner(char[][] board) {
-		for (int i = 0; i < board.length; i++) {
-			if (board[i][0] != ' ' && board[i][0] == board[i][1] && board[i][0] == board[i][2])
-				return board[i][0];
-			else if (board[0][i] != ' ' && board[0][i] == board[1][i] && board[0][i] == board[2][i])
-				return board[0][i];
-		}
-		if (board[0][0] != ' ' && board[0][0] == board[1][1] && board[0][0] == board[2][2])
-			return board[0][0];
-		else if (board[0][2] != ' ' && board[0][2] == board[1][1] && board[0][2] == board[2][0])
-			return board[0][2];
-		return 0;
 	}
 
 	/** Returns true if board is full. */
 	public static boolean isFull(char[][] board) {
-		System.out.println(1);
 		for (int x = 0; x < board.length; x++) {
 			for (int y = 0; y < board[x].length; y++) {
 				if (board[x][y] == ' ') {
