@@ -2,6 +2,11 @@ package tictactoe;
 
 /** The three-in-a-row game for two human players. */
 public class TicTacToe {
+	static final int COMPUTER_WIN = 1;
+	static final int DRAW = 0;
+	static final int HUMAN_WIN = -1;
+	static char COMPUTER;
+	static char HUMAN;
 
 	/** Plays the game. */
 	public static void main(String[] args) {
@@ -14,25 +19,72 @@ public class TicTacToe {
 		StdDraw.setXscale(-0.5, 2.5);
 		StdDraw.setYscale(-0.5, 2.5);
 		boolean youFirst = moveFirst();
-		char player1 = pickOX();
-		char computer = opposite(player1);
-		draw(board, player1);
+		HUMAN = pickOX();
+		COMPUTER = opposite(HUMAN);
+		draw(board, HUMAN);
 		while (!gameOver(board)) {
 			if (youFirst) {
-				handleMouseClick(board, player1);
-				draw(board, player1);
+				handleMouseClick(board, HUMAN);
+				draw(board, HUMAN);
 			} else {
-				chooseMove(board, computer);
-				draw(board, computer);
+				BestMove bestMove = chooseMove(board, COMPUTER);
+				board[bestMove.x][bestMove.y] = COMPUTER;
+				draw(board, COMPUTER);
 			}
 			youFirst = !youFirst;
 		}
 	}
 
 	/** Choose best move for computer */
-	public static void chooseMove(char[][] board, char computer) {
-		if (board[1][1] == ' ')
-			board[1][1] = computer;
+	public static BestMove chooseMove(char[][] board, char side) {
+		BestMove bestMove = new BestMove();
+		BestMove reply;
+
+		char winner = winner(board);
+		boolean isFull = isFull(board);
+		if (winner != 0 || isFull) {
+			if (winner == COMPUTER)
+				bestMove.score = COMPUTER_WIN;
+			else if (winner == HUMAN)
+				bestMove.score = HUMAN_WIN;
+			else
+				bestMove.score = DRAW;
+			return bestMove;
+		}
+
+		// if (side == COMPUTER)
+		// bestMove.score = 1;
+		// else
+		// bestMove.score = -1;
+
+		for (int x = 0; x < board[0].length; x++) {
+			for (int y = 0; y < board.length; y++) {
+				if (board[x][y] == ' ') {
+					board[x][y] = side;
+					System.out.println("Score: " + bestMove.score + " X: " + x + " Y: " + y);
+					printBoard(board);
+					reply = chooseMove(board, opposite(side));
+					board[x][y] = ' ';
+					if ((side == COMPUTER && reply.score > bestMove.score)
+							|| (side == HUMAN && reply.score < bestMove.score)) {
+						bestMove.x = x;
+						bestMove.y = y;
+						bestMove.score = reply.score;
+					}
+				}
+			}
+		}
+		return bestMove;
+	}
+
+	public static void printBoard(char[][] board) {
+		for (int x = 0; x < board[0].length; x++) {
+			for (int y = 0; y < board.length; y++) {
+				System.out.print(board[x][y] + " ");
+			}
+			System.out.println();
+		}
+		System.out.println("===============");
 	}
 
 	/** Returns true if you are first player. */
@@ -129,9 +181,8 @@ public class TicTacToe {
 		}
 		if (x >= board.length || y >= board.length || x < 0 || y < 0)
 			return;
-		if (board[x][y] == ' ') {
+		if (board[x][y] == ' ')
 			board[x][y] = player;
-		}
 	}
 
 	/** Returns true if board is full. */
