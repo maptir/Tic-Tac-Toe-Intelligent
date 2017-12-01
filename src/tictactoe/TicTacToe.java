@@ -1,5 +1,8 @@
 package tictactoe;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** The three-in-a-row game for two human players. */
 public class TicTacToe {
 	static final int COMPUTER_WIN = 1;
@@ -47,31 +50,30 @@ public class TicTacToe {
 				bestMove.score = COMPUTER_WIN;
 			else if (winner == HUMAN)
 				bestMove.score = HUMAN_WIN;
-			else
+			else if (isFull)
 				bestMove.score = DRAW;
 			return bestMove;
 		}
 
-		// if (side == COMPUTER)
-		// bestMove.score = 1;
-		// else
-		// bestMove.score = -1;
+		if (side == COMPUTER)
+			bestMove.score = -1;
+		else
+			bestMove.score = 1;
 
+		List<BestMove> legalMove = new ArrayList<>();
 		for (int x = 0; x < board[0].length; x++) {
 			for (int y = 0; y < board.length; y++) {
-				if (board[x][y] == ' ') {
-					board[x][y] = side;
-					System.out.println("Score: " + bestMove.score + " X: " + x + " Y: " + y);
-					printBoard(board);
-					reply = chooseMove(board, opposite(side));
-					board[x][y] = ' ';
-					if ((side == COMPUTER && reply.score > bestMove.score)
-							|| (side == HUMAN && reply.score < bestMove.score)) {
-						bestMove.x = x;
-						bestMove.y = y;
-						bestMove.score = reply.score;
-					}
-				}
+				if (board[x][y] == ' ')
+					legalMove.add(new BestMove(x, y));
+			}
+		}
+		for (BestMove b : legalMove) {
+			board[b.x][b.y] = side;
+			reply = chooseMove(board, opposite(side));
+			board[b.x][b.y] = ' ';
+			if ((side == COMPUTER && reply.score > bestMove.score) || (side == HUMAN && reply.score < bestMove.score)) {
+				bestMove.move(b.x, b.y);
+				bestMove.score = reply.score;
 			}
 		}
 		return bestMove;
@@ -179,6 +181,8 @@ public class TicTacToe {
 		while (StdDraw.mousePressed()) {
 			// Wait for mouse release
 		}
+		if (board[x][y] != ' ')
+			handleMouseClick(board, player);
 		if (x >= board.length || y >= board.length || x < 0 || y < 0)
 			return;
 		if (board[x][y] == ' ')
